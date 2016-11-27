@@ -2,7 +2,16 @@
 #define _CBITS_H
 
 /* Data Structure for storing the bit pattern */
-typedef struct cbits;
+typedef struct cbits {
+
+    /* Number of bits in array */
+    size_t bitsize;
+
+    /* Pointer to array containing bits */
+    unsigned char data[];
+
+} cbits;
+
 
 /* Function Prototypes */
 

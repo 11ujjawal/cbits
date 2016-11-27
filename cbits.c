@@ -4,18 +4,8 @@
 #include <errno.h>
 #include <stdint.h>
 #include <limits.h>
+#include "cbits.h"
 
-
-/* Type definition */
-typedef struct cbits {
-
-    /* Number of bits in array */
-    size_t bitsize;
-
-    /* Pointer to array containing bits */
-    unsigned char data[];
-
-} cbits;
 
 /* Check whether the string passed is either 0 or 1. If it is, then copy
  * the value to the cbits object else flag an error for unavailibilty of
@@ -70,26 +60,26 @@ size_t bitlen(const char *bit) {
 }
 
 int main(void) {
-    char *bit = bitnew("002394");
+    char *bit1 = bitnew("002394");
     if(bit1 == NULL) {
-        printf("%s\n", strerror(errno));
+        printf("%s\n", strerror(errno));    // Prints 'Invalid Sequence'
     }
 
     /* Initialize the bit pattern as sequence of zeros and ones */
-    char *bit1 = bitnew("010101");
+    char *bit2 = bitnew("010101");
 
     /* The bit pattern returns a pointer to the string containing the
      * characters which can be equated to NULL to check if the value
      * has been assigned */
-    if(bit1 == NULL) {
+    if(bit2 == NULL) {
         printf("%s\n", strerror(errno));
     } else {
-        printf("%s\n", bit1);
+        printf("%s\n", bit2);               // Prints '010101'
     }
 
     /* Query the total number of bits stored */
-    size_t len = bitlen(bit1);
-    printf("%d\n", len);
+    size_t len = bitlen(bit2);
+    printf("%d\n", len);                    // Prints '6'
 
     return 0;
 }
