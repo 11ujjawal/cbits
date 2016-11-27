@@ -13,9 +13,23 @@ typedef struct cbits {
     size_t bitsize;
 
     /* Pointer to array containing bits */
-    unsigned char *data;
+    unsigned char data[];
 
 } cbits;
+
+/* Check whether the string passed is either 0 or 1. If it is, then copy
+ * the value to the cbits object else flag an error for unavailibilty of
+ * message of desired type and exit the function returing NULL */
+static int bitinorder(const char *bit, size_t bitlen) {
+    for(int i = 0; i < bitlen; i++) {
+        if(!(bit[i] == '0' || bit[i] == '1')) {
+            errno = EINVAL;
+            return 0;
+        }
+    }
+
+    return 1;
+}
 
 /*
  * Create a new cbit object from a null terminating C string
@@ -23,7 +37,13 @@ typedef struct cbits {
 char* bitnew(const char *bit) {
     size_t bitlen = (bit == NULL) ? 0 : strlen(bit);
 
-    cbits *cb = malloc(sizeof(cbits));
+    if(!bitinorder(bit, bitlen)) {
+        return NULL;
+    }
+
+    /* Assign memory equal to the size of the cbits struct, the number of
+     * characters in the bit array and one for null character */
+    cbits *cb = malloc(sizeof(cbits) + bitlen + 1);
 
     /* If memory allocation fails, set errno to indicate unavailability of
      * space and termiate the call */
@@ -33,61 +53,43 @@ char* bitnew(const char *bit) {
     }
 
     cb->bitsize = bitlen;
-    cb->data = malloc(sizeof(unsigned char) * bitlen);
-
-    /* If memory allocation fails, set errno to indicate unavailability of
-     * space and termiate the call */
-    if(cb->data == NULL) {
-        errno = ENOMEM;
-        return NULL;
-    }
-
-    /* Check whether the string passed is either 0 or 1. If it is, then copy
-     * the value to the cbits object else flag an error for unavailibilty of
-     * message of desired type and exit the function returing NULL */
-    for(int i = 0; i < bitlen; i++) {
-        if(bit[i] == '0' || bit[i] == '1') {
-            cb->data[i] = bit[i];
-        } else {
-            errno = EINVAL;
-            free(cb->data);
-            free(cb);
-            return NULL;
-        }
-    }
+    memcpy(cb->data, bit, bitlen);
     cb->data[bitlen] = '\0';
-    printf("%d\n", cb);
-    printf("%d\n", cb + sizeof(size_t));
-    printf("%p\n", *cb);
 
     return cb->data;
 }
 
 /*
- *
+ * Returns the total number of bits
  */
 size_t bitlen(const char *bit) {
     if(bit == NULL)
         return INT_MIN;
 
-    printf("%d\n", bit);
-
-    return 0;
+    return ((cbits*)(bit - sizeof(size_t)))->bitsize;
 }
 
 int main(void) {
-    // char *bit = bitnew("002394");
-    // if(bit == NULL) {
-    //     printf("%s\n", strerror(errno));
-    // }
+    char *bit = bitnew("002394");
+    if(bit1 == NULL) {
+        printf("%s\n", strerror(errno));
+    }
 
-    char *bit1 = bitnew("01");
-    // if(bit1 == NULL) {
-    //     printf("%s\n", strerror(errno));
-    // } else {
-    //     printf("%s\n", bit1);
-    // }
+    /* Initialize the bit pattern as sequence of zeros and ones */
+    char *bit1 = bitnew("010101");
+
+    /* The bit pattern returns a pointer to the string containing the
+     * characters which can be equated to NULL to check if the value
+     * has been assigned */
+    if(bit1 == NULL) {
+        printf("%s\n", strerror(errno));
+    } else {
+        printf("%s\n", bit1);
+    }
+
+    /* Query the total number of bits stored */
     size_t len = bitlen(bit1);
-    // printf("%d\n", len);
+    printf("%d\n", len);
+
     return 0;
 }
