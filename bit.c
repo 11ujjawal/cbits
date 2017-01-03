@@ -5,6 +5,7 @@
 bool isPowerOfTwo(int num);
 bool all(int num);
 bool sign(int numOne, int numTwo);
+int abs(int num);
 char* print(bool result);
 
 int main(void) {
@@ -20,6 +21,7 @@ int main(void) {
 
     /* Demonstrates-> isPowerOfTwo() */
     printf("\nisPowerOfTwo()\n");
+    printf("\t%d -> %s", numZero, print(isPowerOfTwo(numZero)));
     printf("\t%d -> %s", numOdd, print(isPowerOfTwo(numOdd)));
     printf("\t%d -> %s", numPowerTwo, print(isPowerOfTwo(numPowerTwo)));
 
@@ -35,6 +37,10 @@ int main(void) {
     printf("\t%d, %d -> %s", numEven, numOdd, print(sign(numEven, numOdd)));
     printf("\t%d, %d -> %s", numNeg, numNeg, print(sign(numNeg, numNeg)));
 
+    /* Demonstrates abs() */
+    printf("\nabs()\n");
+    printf("\t%d -> %d\n", numNeg, abs(numNeg));
+    printf("\t%d -> %d\n", numEven, abs(numEven));
 
     return 0;
 }
@@ -42,7 +48,8 @@ int main(void) {
 /* To check if a number is power of two.
  * Bitwise AND the given number and the number one less than the given number
  * and equate the result to zero. A number which is a power of 2, will be
- * reduced to zero after the operation.
+ * reduced to zero after the operation. The above method will account zero
+ * as a power of two. To remedy this situation, evaluate the given number.
  *
  * CAUTION - The below method will work for unsigned numbers only because the
  * numbers are stored as two's complement in the computer memeory.
@@ -52,10 +59,10 @@ int main(void) {
  * Therefore, (000 0010 0000 0000 & 0000 0001 1111 1111) = 0000 0000 0000 0000
  */
 bool isPowerOfTwo(int num) {
-    if(num & (num - 1))
-        return false;
-    else
+    if(num && !(num & (num - 1)))
         return true;
+    else
+        return false;
 }
 
 /* To check if the number is of the form (2^n - 1), 0 or all 1s.
@@ -93,6 +100,22 @@ bool sign(int numOne, int numTwo) {
         return true;
     else
         return false;
+}
+
+/* Compute the absolute value of a number.
+ * WARNING - To be completed...
+ * Example -
+ *                      numNeg -> 1111 1110 1001 0111 (-361)
+ *        (mask)(numNeg >> 16) -> 0000 0000 0000 0001 (1)
+ *             (numNeg ^ mask) -> 1111 1110 1001 0110 (-362)
+ *      (numNeg ^ mask) - mask -> 1111 1110 1001 0101 (-363)
+ *               unsigned cast -> 0000 0001 0110 1001 (361)
+
+ */
+int abs(int num) {
+    int const mask = num >> (sizeof(int) * CHAR_BIT - 1);
+
+    return (unsigned)((num ^ mask) - mask);
 }
 
 /* Preety Print the boolean value */
